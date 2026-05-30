@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Villa Javéa">
+<title>Villa Javéa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F7F5F0;--surface:#FFFFFF;--surface2:#F0EDE8;--border:#E0DDD8;
+  --text:#1A1A18;--text2:#6B6860;--text3:#A09E9A;
+  --green:#2D5A3D;--green-light:#E8F0EA;--green-text:#1B3D28;
+  --gold:#C4872A;--gold-light:#FDF3E3;
+  --red:#C0392B;--red-light:#FDECEA;
+  --blue:#2C6E9E;
+  --radius:14px;--radius-sm:10px;
+  --safe-top:env(safe-area-inset-top,44px);
+  --safe-bottom:env(safe-area-inset-bottom,34px);
+}
+html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.header{padding:calc(var(--safe-top) + 8px) 20px 12px;background:var(--surface);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.villa-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text)}
+.villa-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.hdr-badge{background:var(--green-light);color:var(--green-text);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 20px}
+.bottom-nav{display:flex;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 calc(var(--safe-bottom) + 4px)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;color:var(--text3);font-size:10px;font-weight:500;border:none;background:none;font-family:'DM Sans',sans-serif}
+.nav-item.active{color:var(--green)}
+.nav-icon{font-size:22px;line-height:1}
+.metrics-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.metric{background:var(--surface);border-radius:var(--radius);padding:14px 16px;border:1px solid var(--border)}
+.metric.accent{background:var(--green);border-color:var(--green)}
+.metric-label{font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:6px}
+.metric.accent .metric-label{color:rgba(255,255,255,0.7)}
+.metric-value{font-size:24px;font-weight:600;color:var(--text);letter-spacing:-0.5px}
+.metric.accent .metric-value{color:#fff}
+.metric-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.metric.accent .metric-sub{color:rgba(255,255,255,0.6)}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px}
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:10px}
+.card-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.card-item:last-child{border-bottom:none}
+.card-item-body{flex:1;min-width:0}
+.card-item-name{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-item-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.card-item-right{text-align:right;flex-shrink:0}
+.card-item-price{font-size:14px;font-weight:600;color:var(--text)}
+.del-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;margin-left:4px}
+.badge{display:inline-flex;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px}
+.b-ok{background:var(--green-light);color:var(--green-text)}
+.b-wait{background:var(--gold-light);color:#7A5210}
+.b-done{background:var(--surface2);color:var(--text3)}
+.filter-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:14px;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:12px;font-weight:500;padding:5px 14px;cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif}
+.chip.active{background:var(--green);border-color:var(--green);color:#fff}
+.total-bar{background:var(--surface2);border-radius:var(--radius-sm);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.total-bar span:first-child{font-size:12px;color:var(--text2)}
+.total-bar span:last-child{font-size:15px;font-weight:700;color:var(--text)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month-title{font-family:'DM Serif Display',serif;font-size:20px}
+.cal-arrow{background:var(--surface2);border:none;border-radius:20px;width:32px;height:32px;font-size:18px;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.cal-days-header,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dh{text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;border-radius:8px;color:var(--text2)}
+.cal-day.empty{opacity:0;pointer-events:none}
+.cal-day.occupied{background:#D4E8F5;color:var(--blue);font-weight:500}
+.cal-day.arrival{background:var(--green);color:#fff;font-weight:600}
+.cal-day.departure{background:var(--gold-light);color:var(--gold);font-weight:600;border:1px solid #EDCC8A}
+.cal-day.today{outline:2px solid var(--green);outline-offset:-2px;font-weight:600;color:var(--green)}
+.cal-legend{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
+.leg-dot{width:10px;height:10px;border-radius:3px}
+.occ-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:10px}
+.occ-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin:8px 0 4px}
+.occ-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.5s ease}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.stat-row:last-child{border-bottom:none}
+.stat-l{font-size:13px;color:var(--text2)}
+.stat-v{font-size:13px;font-weight:600;color:var(--text)}
+.exp-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.exp-amount{font-size:14px;font-weight:600;color:var(--red)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px calc(var(--safe-bottom) + 20px);width:100%;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.32,.72,0,1)}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:18px;color:var(--text)}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:0.3px;text-transform:uppercase;margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:15px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;-webkit-appearance:none}
+.form-input:focus{outline:2px solid var(--green);outline-offset:-1px;border-color:transparent}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-row{display:flex;gap:10px;margin-top:18px}
+.btn-primary{flex:1;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;padding:14px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-primary:disabled{opacity:0.6}
+.btn-cancel{background:var(--surface2);color:var(--text2);border:none;border-radius:var(--radius-sm);font-size:15px;padding:14px 18px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.spinner{display:flex;align-items:center;justify-content:center;gap:8px;padding:30px;color:var(--text3);font-size:13px}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:calc(var(--safe-bottom) + 90px);left:50%;transform:translateX(-50%) translateY(10px);background:#1A1A18;color:#fff;font-size:13px;padding:10px 18px;border-radius:20px;z-index:2000;opacity:0;transition:all 0.25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.page{display:none}.page.active{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-inner">
+      <div>
+        <div class="villa-title">Villa Javéa</div>
+        <div class="villa-sub" id="hdr-month">Chargement...</div>
+      </div>
+      <div class="hdr-badge" id="hdr-badge">—</div>
+    </div>
+  </div>
+
+  <div class="content" id="main-content">
+    <div class="page active" id="page-dashboard">
+      <div class="metrics-row">
+        <div class="metric accent"><div class="metric-label">Revenus</div><div class="metric-value" id="d-rev">—</div><div class="metric-sub">Ce mois</div></div>
+        <div class="metric"><div class="metric-label">Occupation</div><div class="metric-value" id="d-occ">—</div><div class="metric-sub" id="d-occ-sub">—</div></div>
+        <div class="metric"><div class="metric-label">Frais</div><div class="metric-value" id="d-exp">—</div><div class="metric-sub">Ce mois</div></div>
+        <div class="metric"><div class="metric-label">Net</div><div class="metric-value" id="d-net">—</div><div class="metric-sub" id="d-net-sub">—</div></div>
+      </div>
+      <div class="section-title">Prochaines arrivées</div>
+      <div id="d-upcoming"><div class="spinner"><div class="spin"></div>Chargement...</div></div>
+    </div>
+
+    <div class="page" id="page-reservations">
+      <div class="filter-bar" id="res-chips">
+        <button class="chip active" onclick="setResF('all',this)">Toutes</button>
+        <button class="chip" onclick="setResF('Confirmé',this)">Confirmées</button>
+        <button class="chip" onclick="setResF('En attente',this)">En attente</button>
+        <button class="chip" onclick="setResF('Terminé',this)">Terminées</button>
+      </div>
+      <div id="res-list"><div class="spinner"><div class="spin"></div>Chargement...</div></div>
+      <div class="total-bar"><span>Total affiché</span><span id="res-total">—</span></div>
+    </div>
+
+    <div class="page" id="page-calendar">
+      <div class="card" style="padding:16px;margin-bottom:10px">
+        <div class="cal-nav">
+          <button class="cal-arrow" onclick="prevM()">‹</button>
+          <div class="cal-month-title" id="cal-label"></div>
+          <button class="cal-arrow" onclick="nextM()">›</button>
+        </div>
+        <div class="cal-days-header">
+          <div class="cal-dh">Lu</div><div class="cal-dh">Ma</div><div class="cal-dh">Me</div>
+          <div class="cal-dh">Je</div><div class="cal-dh">Ve</div><div class="cal-dh">Sa</div><div class="cal-dh">Di</div>
+        </div>
+        <div class="cal-grid" id="cal-grid" style="margin-top:3px"></div>
+        <div class="cal-legend">
+          <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Arrivée</div>
+          <div class="leg"><div class="leg-dot" style="background:#D4E8F5"></div>Occupé</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--gold-light);border:1px solid #EDCC8A"></div>Départ</div>
+        </div>
+      </div>
+      <div class="occ-card">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Taux d'occupation</div>
+        <div class="occ-bar"><div class="occ-fill" id="occ-fill" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3)"><span>0%</span><span id="occ-pct">0%</span></div>
+        <div class="stat-row" style="margin-top:8px"><span class="stat-l">Nuits occupées</span><span class="stat-v" id="s-occ">—</span></div>
+        <div class="stat-row"><span class="stat-l">Nuits libres</span><span class="stat-v" id="s-free">—</span></div>
+        <div class="stat-row"><span class="stat-l">Revenu moyen / nuit</span><span class="stat-v" id="s-avg">—</span></div>
+      </div>
+      <div class="section-title">Séjours ce mois</div>
+      <div id="month-stays"></div>
+    </div>
+
+    <div class="page" id="page-expenses">
+      <div class="metrics-row" style="grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="metric" style="padding:12px"><div class="metric-label" style="font-size:10px">Total</div><div class="metric-value" style="font-size:18px" id="e-total">—</div></div>
+        <div class="metric" style="padding:12px"><div class="metric-label" style="font-size:10px">Ce mois</div><div class="metric-value" style="font-size:18px" id="e-month">—</div></div>
+        <div class="metric" style="padding:12px"><div class="metric-label" style="font-size:10px">Catégories</div><div class="metric-value" style="font-size:18px" id="e-cats">—</div></div>
+      </div>
+      <div class="filter-bar" id="exp-chips">
+        <button class="chip active" onclick="setExpF('all',this)">Toutes</button>
+        <button class="chip" onclick="setExpF('Entretien',this)">Entretien</button>
+        <button class="chip" onclick="setExpF('Énergie',this)">Énergie</button>
+        <button class="chip" onclick="setExpF('Ménage',this)">Ménage</button>
+        <button class="chip" onclick="setExpF('Assurance',this)">Assurance</button>
+        <button class="chip" onclick="setExpF('Divers',this)">Divers</button>
+      </div>
+      <div id="exp-list"><div class="spinner"><div class="spin"></div>Chargement...</div></div>
+      <div class="total-bar"><span>Total filtré</span><span id="exp-total-shown" style="color:var(--red)">—</span></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">🏠</span><span>Accueil</span></button>
+    <button class="nav-item" onclick="showPage('reservations',this)"><span class="nav-icon">📅</span><span>Réservations</span></button>
+    <button class="nav-item" onclick="showPage('calendar',this)"><span class="nav-icon">🗓</span><span>Occupation</span></button>
+    <button class="nav-item" onclick="showPage('expenses',this)"><span class="nav-icon">💶</span><span>Frais</span></button>
+  </div>
+</div>
+
+<button onclick="openFab()" style="position:fixed;bottom:calc(var(--safe-bottom) + 74px);right:20px;width:52px;height:52px;border-radius:26px;background:var(--green);color:#fff;border:none;font-size:26px;cursor:pointer;z-index:100;box-shadow:0 4px 16px rgba(45,90,61,0.35);display:flex;align-items:center;justify-content:center">+</button>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal-res">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nouvelle réservation</div>
+    <div class="form-group"><label class="form-label">Locataire</label><input class="form-input" id="r-name" placeholder="Nom du locataire"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Arrivée</label><input class="form-input" id="r-start" type="date"></div>
+      <div class="form-group"><label class="form-label">Départ</label><input class="form-input" id="r-end" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Montant (€)</label><input class="form-input" id="r-price" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Statut</label>
+        <select class="form-input" id="r-status"><option>Confirmé</option><option>En attente</option><option>Terminé</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('res')">Annuler</button>
+      <button class="btn-primary" id="btn-res" onclick="addRes()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-exp">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nouveau frais</div>
+    <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="e-desc" placeholder="Description"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Montant (€)</label><input class="form-input" id="e-amount" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="e-date" type="date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Catégorie</label>
+      <select class="form-input" id="e-cat"><option>Entretien</option><option>Énergie</option><option>Ménage</option><option>Assurance</option><option>Divers</option></select>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('exp')">Annuler</button>
+      <button class="btn-primary" id="btn-exp" onclick="addExp()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://cszpopegucrrwgpgmuzt.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenBvcGVndWNycndncGdtdXp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzk4NjUsImV4cCI6MjA5NTcxNTg2NX0.e6bCfeYnitvLpFd_rwxMtE9EPRmhWz14sD5vew6Nypo';
+const H={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
+const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MS=['jan','fév','mar','avr','mai','juin','juil','aoû','sep','oct','nov','déc'];
+const CE={Entretien:'🔧',Énergie:'⚡',Ménage:'🧹',Assurance:'🛡️',Divers:'📦'};
+const CB={Entretien:'#D4E8F5',Énergie:'#FDF3E3',Ménage:'#E8F0EA',Assurance:'#F4E8F0',Divers:'#EEE'};
+
+let R=[],E=[],calM=new Date().getMonth()+1,calY=new Date().getFullYear(),rF='all',eF='all',cur='dashboard';
+
+async function db(t,m='GET',b=null,p=''){
+  const r=await fetch(`${SUPA_URL}/rest/v1/${t}${p}`,{method:m,headers:{...H,...(m!=='GET'?{'Prefer':'return=minimal'}:{})},body:b?JSON.stringify(b):null});
+  if(m==='GET')return r.json();return r.ok;
+}
+
+async function load(){
+  try{[R,E]=await Promise.all([db('reservations','GET',null,'?order=start_date.desc'),db('expenses','GET',null,'?order=expense_date.desc')]);renderAll();}
+  catch{toast('❌ Erreur de connexion');}
+}
+
+const fE=n=>Math.round(n).toLocaleString('fr-FR')+' €';
+const fD=d=>{if(!d)return'—';const[,m,day]=String(d).split('-');return`${parseInt(day)} ${MS[parseInt(m)-1]}`;};
+const fDF=d=>{if(!d)return'—';const[y,m,day]=String(d).split('-');return`${parseInt(day)} ${MS[parseInt(m)-1]} ${y}`;};
+const nts=r=>Math.max(0,Math.round((new Date(r.end_date)-new Date(r.start_date))/86400000));
+const tStr=()=>new Date().toISOString().split('T')[0];
+const sBadge=s=>{const m={Confirmé:'b-ok','En attente':'b-wait',Terminé:'b-done'};return`<span class="badge ${m[s]||'b-done'}">${s}</span>`;};
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  cur=name;document.getElementById('main-content').scrollTop=0;load();
+}
+
+function renderAll(){
+  renderDash();
+  if(cur==='reservations')renderRes();
+  if(cur==='calendar')renderCal();
+  if(cur==='expenses')renderExp();
+}
+
+function renderDash(){
+  const now=new Date(),cm=now.getMonth()+1,cy=now.getFullYear(),dim=new Date(cy,cm,0).getDate();
+  const mR=R.filter(r=>{const s=new Date(r.start_date),e=new Date(r.end_date);return(s.getFullYear()===cy&&s.getMonth()+1===cm)||(e.getFullYear()===cy&&e.getMonth()+1===cm);});
+  const rev=mR.reduce((a,r)=>a+parseFloat(r.price||0),0);
+  const occ=new Set();
+  R.forEach(r=>{for(let d=new Date(r.start_date);d<new Date(r.end_date);d.setDate(d.getDate()+1)){if(d.getFullYear()===cy&&d.getMonth()+1===cm)occ.add(d.getDate());}});
+  const mE=E.filter(e=>{const[y,m]=String(e.expense_date).split('-');return parseInt(m)===cm&&parseInt(y)===cy;});
+  const expT=mE.reduce((a,e)=>a+parseFloat(e.amount||0),0);
+  const net=rev-expT;
+  document.getElementById('d-rev').textContent=fE(rev);
+  document.getElementById('d-occ').textContent=Math.round(occ.size/dim*100)+'%';
+  document.getElementById('d-occ-sub').textContent=occ.size+' / '+dim+' nuits';
+  document.getElementById('d-exp').textContent=fE(expT);
+  document.getElementById('d-net').textContent=fE(net);
+  document.getElementById('d-net-sub').textContent=net>=0?'Bénéficiaire':'Déficitaire';
+  document.getElementById('d-net-sub').style.color=net>=0?'var(--green)':'var(--red)';
+  document.getElementById('hdr-month').textContent=MONTHS[cm-1]+' '+cy;
+  document.getElementById('hdr-badge').textContent=Math.round(occ.size/dim*100)+'% occupé';
+  const up=R.filter(r=>r.start_date>=tStr()&&r.status!=='Terminé').sort((a,b)=>a.start_date.localeCompare(b.start_date)).slice(0,5);
+  const c=document.getElementById('d-upcoming');
+  if(!up.length){c.innerHTML=`<div class="empty-state">🌴 Aucune réservation à venir</div>`;return;}
+  c.innerHTML=`<div class="card">${up.map(r=>`<div class="card-item"><div class="card-item-body"><div class="card-item-name">${r.name}</div><div class="card-item-sub">${fD(r.start_date)} → ${fD(r.end_date)} · ${nts(r)} nuit${nts(r)>1?'s':''}</div></div><div class="card-item-right">${sBadge(r.status)}<div class="card-item-price" style="margin-top:4px">${fE(parseFloat(r.price||0))}</div></div></div>`).join('')}</div>`;
+}
+
+function setResF(f,btn){rF=f;document.querySelectorAll('#res-chips .chip').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderRes();}
+function renderRes(){
+  const list=R.filter(r=>rF==='all'||r.status===rF);
+  const c=document.getElementById('res-list');
+  if(!list.length){c.innerHTML=`<div class="empty-state">📋 Aucune réservation</div>`;document.getElementById('res-total').textContent='0 €';return;}
+  c.innerHTML=`<div class="card">${list.map(r=>`<div class="card-item"><div class="card-item-body"><div class="card-item-name">${r.name}</div><div class="card-item-sub">${fDF(r.start_date)} → ${fDF(r.end_date)} · ${nts(r)} nuit${nts(r)>1?'s':''}</div><div style="margin-top:5px">${sBadge(r.status)}</div></div><div class="card-item-right"><div class="card-item-price">${fE(parseFloat(r.price||0))}</div><button class="del-btn" onclick="delR(${r.id})">🗑</button></div></div>`).join('')}</div>`;
+  document.getElementById('res-total').textContent=fE(list.reduce((a,r)=>a+parseFloat(r.price||0),0));
+}
+
+async function delR(id){if(!confirm('Supprimer ?'))return;await db('reservations','DELETE',null,`?id=eq.${id}`);toast('✅ Supprimée');load();}
+
+function prevM(){calM--;if(calM<1){calM=12;calY--;}renderCal();}
+function nextM(){calM++;if(calM>12){calM=1;calY++;}renderCal();}
+function renderCal(){
+  document.getElementById('cal-label').textContent=MONTHS[calM-1]+' '+calY;
+  const dim=new Date(calY,calM,0).getDate(),fd=(new Date(calY,calM-1,1).getDay()+6)%7;
+  const occ=new Set(),arr=new Set(),dep=new Set();
+  R.forEach(r=>{
+    const s=new Date(r.start_date),e=new Date(r.end_date);
+    if(s.getFullYear()===calY&&s.getMonth()+1===calM)arr.add(s.getDate());
+    if(e.getFullYear()===calY&&e.getMonth()+1===calM)dep.add(e.getDate());
+    for(let d=new Date(s);d<e;d.setDate(d.getDate()+1)){if(d.getFullYear()===calY&&d.getMonth()+1===calM)occ.add(d.getDate());}
+  });
+  const tn=new Date();
+  let html=Array(fd).fill('<div class="cal-day empty">·</div>').join('');
+  for(let n=1;n<=dim;n++){
+    const isT=tn.getDate()===n&&tn.getMonth()+1===calM&&tn.getFullYear()===calY;
+    let cls='cal-day';
+    if(arr.has(n))cls+=' arrival';else if(dep.has(n))cls+=' departure';else if(occ.has(n))cls+=' occupied';
+    if(isT)cls+=' today';
+    html+=`<div class="${cls}">${n}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+  const rate=Math.round(occ.size/dim*100);
+  document.getElementById('occ-fill').style.width=rate+'%';
+  document.getElementById('occ-pct').textContent=rate+'%';
+  document.getElementById('s-occ').textContent=occ.size;
+  document.getElementById('s-free').textContent=dim-occ.size;
+  const mR=R.filter(r=>{const s=new Date(r.start_date),e=new Date(r.end_date);return(s.getFullYear()===calY&&s.getMonth()+1===calM)||(e.getFullYear()===calY&&e.getMonth()+1===calM);});
+  const revT=mR.reduce((a,r)=>a+parseFloat(r.price||0),0);
+  document.getElementById('s-avg').textContent=occ.size>0?fE(Math.round(revT/occ.size)):'—';
+  const stays=document.getElementById('month-stays');
+  if(!mR.length){stays.innerHTML=`<div class="empty-state">🌿 Aucun séjour ce mois</div>`;return;}
+  stays.innerHTML=`<div class="card">${mR.map(r=>`<div class="card-item"><div class="card-item-body"><div class="card-item-name">${r.name}</div><div class="card-item-sub">${fD(r.start_date)} → ${fD(r.end_date)} · ${nts(r)} nuits</div></div><div class="card-item-right"><div class="card-item-price">${fE(parseFloat(r.price||0))}</div></div></div>`).join('')}</div>`;
+}
+
+function setExpF(f,btn){eF=f;document.querySelectorAll('#exp-chips .chip').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderExp();}
+function renderExp(){
+  const now=new Date(),cm=now.getMonth()+1,cy=now.getFullYear();
+  const mE=E.filter(e=>{const[y,m]=String(e.expense_date).split('-');return parseInt(m)===cm&&parseInt(y)===cy;});
+  const cats=[...new Set(E.map(e=>e.category))];
+  document.getElementById('e-total').textContent=fE(E.reduce((a,e)=>a+parseFloat(e.amount||0),0));
+  document.getElementById('e-month').textContent=fE(mE.reduce((a,e)=>a+parseFloat(e.amount||0),0));
+  document.getElementById('e-cats').textContent=cats.length||'—';
+  const list=E.filter(e=>eF==='all'||e.category===eF);
+  const c=document.getElementById('exp-list');
+  if(!list.length){c.innerHTML=`<div class="empty-state">💶 Aucun frais</div>`;document.getElementById('exp-total-shown').textContent='0 €';return;}
+  c.innerHTML=`<div class="card">${list.map(e=>`<div class="card-item"><div class="exp-icon" style="background:${CB[e.category]||'#EEE'}">${CE[e.category]||'📦'}</div><div class="card-item-body"><div class="card-item-name">${e.description}</div><div class="card-item-sub">${e.category} · ${fDF(e.expense_date)}</div></div><div class="card-item-right"><div class="exp-amount">−${fE(parseFloat(e.amount||0))}</div><button class="del-btn" onclick="delE(${e.id})">🗑</button></div></div>`).join('')}</div>`;
+  document.getElementById('exp-total-shown').textContent=fE(list.reduce((a,e)=>a+parseFloat(e.amount||0),0));
+}
+
+async function delE(id){if(!confirm('Supprimer ?'))return;await db('expenses','DELETE',null,`?id=eq.${id}`);toast('✅ Supprimé');load();}
+
+function openFab(){if(cur==='expenses')openModal('exp');else openModal('res');}
+function openModal(t){
+  document.getElementById('modal-'+t).classList.add('open');
+  if(t==='res'){document.getElementById('r-start').value=tStr();document.getElementById('r-end').value=tStr();document.getElementById('r-name').value='';document.getElementById('r-price').value='';}
+  if(t==='exp'){document.getElementById('e-date').value=tStr();document.getElementById('e-desc').value='';document.getElementById('e-amount').value='';}
+}
+function closeModal(t){document.getElementById('modal-'+t).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',function(ev){if(ev.target===this)this.classList.remove('open');});});
+
+async function addRes(){
+  const name=document.getElementById('r-name').value.trim();
+  const sd=document.getElementById('r-start').value,ed=document.getElementById('r-end').value;
+  const price=parseFloat(document.getElementById('r-price').value)||0;
+  const status=document.getElementById('r-status').value;
+  if(!name){toast('⚠️ Saisissez le nom du locataire');return;}
+  if(!sd||!ed||ed<=sd){toast('⚠️ Dates incorrectes');return;}
+  const btn=document.getElementById('btn-res');btn.disabled=true;btn.textContent='Enregistrement...';
+  await db('reservations','POST',{id:Date.now(),name,start_date:sd,end_date:ed,price,status});
+  btn.disabled=false;btn.textContent='Ajouter';
+  closeModal('res');toast('✅ Réservation ajoutée');load();
+}
+
+async function addExp(){
+  const desc=document.getElementById('e-desc').value.trim();
+  const amt=parseFloat(document.getElementById('e-amount').value)||0;
+  const date=document.getElementById('e-date').value;
+  const cat=document.getElementById('e-cat').value;
+  if(!desc){toast('⚠️ Saisissez une description');return;}
+  if(!amt||amt<=0){toast('⚠️ Montant invalide');return;}
+  const btn=document.getElementById('btn-exp');btn.disabled=true;btn.textContent='Enregistrement...';
+  await db('expenses','POST',{id:Date.now(),description:desc,amount:amt,expense_date:date,category:cat});
+  btn.disabled=false;btn.textContent='Ajouter';
+  closeModal('exp');toast('✅ Frais ajouté');load();
+}
+
+load();renderCal();
+</script>
+</body>
+</html>
