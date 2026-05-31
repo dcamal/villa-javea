@@ -109,6 +109,10 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .toast{position:fixed;bottom:calc(var(--safe-bottom) + 90px);left:50%;transform:translateX(-50%) translateY(10px);background:#1A1A18;color:#fff;font-size:13px;padding:10px 18px;border-radius:20px;z-index:2000;opacity:0;transition:all 0.25s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .page{display:none}.page.active{display:block}
+.export-bar{display:flex;justify-content:flex-end;margin-bottom:12px}
+.btn-export{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-weight:600;color:var(--text2);padding:7px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s}
+.btn-export:hover{background:var(--surface2)}
+.btn-export span{font-size:15px}
 </style>
 </head>
 <body>
@@ -136,6 +140,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     </div>
 
     <div class="page" id="page-reservations">
+      <div class="export-bar"><button class="btn-export" onclick="exportRes()"><span>⬇️</span>Exporter CSV</button></div>
       <div class="filter-bar" id="res-chips">
         <button class="chip active" onclick="setResF('all',this)">Toutes</button>
         <button class="chip" onclick="setResF('Confirmé',this)">Confirmées</button>
@@ -177,6 +182,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     </div>
 
     <div class="page" id="page-expenses">
+      <div class="export-bar"><button class="btn-export" onclick="exportExp()"><span>⬇️</span>Exporter CSV</button></div>
       <div class="metrics-row" style="grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
         <div class="metric" style="padding:12px"><div class="metric-label" style="font-size:10px">Total</div><div class="metric-value" style="font-size:18px" id="e-total">—</div></div>
         <div class="metric" style="padding:12px"><div class="metric-label" style="font-size:10px">Ce mois</div><div class="metric-value" style="font-size:18px" id="e-month">—</div></div>
@@ -411,6 +417,42 @@ async function addExp(){
   await db('expenses','POST',{id:Date.now(),description:desc,amount:amt,expense_date:date,category:cat});
   btn.disabled=false;btn.textContent='Ajouter';
   closeModal('exp');toast('✅ Frais ajouté');load();
+}
+
+function exportCSV(filename, rows, headers) {
+  const sep = ';';
+  const escape = v => {
+    const s = String(v ?? '');
+    return s.includes(sep) || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+  };
+  const lines = [headers.map(escape).join(sep), ...rows.map(r => r.map(escape).join(sep))];
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + lines.join('\r\n')], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✅ Export téléchargé');
+}
+
+function exportRes() {
+  const list = R.filter(r => rF === 'all' || r.status === rF);
+  if (!list.length) { toast('⚠️ Aucune réservation à exporter'); return; }
+  const headers = ['Locataire', 'Arrivée', 'Départ', 'Nuits', 'Montant (€)', 'Statut'];
+  const rows = list.map(r => [r.name, r.start_date, r.end_date, nts(r), parseFloat(r.price || 0).toFixed(2), r.status]);
+  const total = list.reduce((a, r) => a + parseFloat(r.price || 0), 0);
+  rows.push(['TOTAL', '', '', '', total.toFixed(2), '']);
+  exportCSV('reservations_villa_javea.csv', rows, headers);
+}
+
+function exportExp() {
+  const list = E.filter(e => eF === 'all' || e.category === eF);
+  if (!list.length) { toast('⚠️ Aucun frais à exporter'); return; }
+  const headers = ['Description', 'Catégorie', 'Date', 'Montant (€)'];
+  const rows = list.map(e => [e.description, e.category, e.expense_date, parseFloat(e.amount || 0).toFixed(2)]);
+  const total = list.reduce((a, e) => a + parseFloat(e.amount || 0), 0);
+  rows.push(['TOTAL', '', '', total.toFixed(2)]);
+  exportCSV('frais_villa_javea.csv', rows, headers);
 }
 
 load();renderCal();
